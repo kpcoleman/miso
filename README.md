@@ -26,15 +26,15 @@ conda activate miso
 ```        
 
 ## Software Requirements  
-scikit-learn==1.0.2
-torch
-torchvision
-numpy==1.21.6
-Pillow==6.1.0
-opencv-python=4.6.0
-scipy==1.7.3
-einops==0.6.0
-scanpy==1.9.1
+scikit-learn==1.0.2  
+torch  
+torchvision  
+numpy==1.21.6  
+Pillow==6.1.0  
+opencv-python=4.6.0  
+scipy==1.7.3  
+einops==0.6.0  
+scanpy==1.9.1  
 
 H&E image feature extraction code is based on HIPT and iSTAR. Pre-trained vision transformer models are from HIPT.
 
