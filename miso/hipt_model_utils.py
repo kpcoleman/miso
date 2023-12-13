@@ -3,6 +3,7 @@ from PIL import Image
 import torch
 import torch.multiprocessing
 torch.multiprocessing.set_sharing_strategy('file_system')
+from torchvision import transforms
 from . import vision_transformer as vits
 from . import vision_transformer4k as vits4k
 

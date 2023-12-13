@@ -6,6 +6,7 @@ import torch
 import torch.multiprocessing
 from torchvision import transforms
 torch.multiprocessing.set_sharing_strategy('file_system')
+from einops import rearrange, reduce, repeat
 from . hipt_model_utils import get_vit256, get_vit4k, tensorbatch2im, eval_transforms
 
 
