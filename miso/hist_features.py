@@ -428,7 +428,7 @@ def smoothen(
     return y
 
 
-def smoothen_embeddings(embs, size, method='cnn', groups=None, device='cuda'):
+def smoothen_embeddings(embs, size, method='cnn', groups=None, fill_missing=False, device='cuda'):
     if groups is None:
         groups = embs.keys()
     out = {}
@@ -437,11 +437,11 @@ def smoothen_embeddings(embs, size, method='cnn', groups=None, device='cuda'):
             if isinstance(em, list):
                 smoothened = [
                         smoothen(
-                            c[..., np.newaxis], size, method,
+                            c[..., np.newaxis], size, method, fill_missing=fill_missing,
                             device=device)[..., 0]
                         for c in em]
             else:
-                smoothened = smoothen(em, size, method, device=device)
+                smoothened = smoothen(em, size, method, fill_missing=fill_missing, device=device)
         else:
             smoothened = em
         out[grp] = smoothened
