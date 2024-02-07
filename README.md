@@ -12,7 +12,6 @@ proteomics, and histology), and spatial transcriptomics and metabolomics (transc
 
 ## MISO Installation
 
-###
 MISO has been tested on the following operating systems: 
 - macOS: Ventura (13.5.1)
 - Linux: CentOS (7)
