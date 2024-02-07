@@ -14,9 +14,9 @@ proteomics, and histology), and spatial transcriptomics and metabolomics (transc
 
 MISO has been tested on the following operating systems: 
 - macOS: Ventura (13.5.1)
-- Linux: CentOS (7)
+- Linux: CentOS (7) 
 
-- MISO installation requires python version 3.7. The version of python can be checked by: 
+MISO installation requires python version 3.7. The version of python can be checked by: 
 ```python
 import platform
 platform.python_version()
