@@ -12,6 +12,7 @@ proteomics, and histology), and spatial transcriptomics and metabolomics (transc
 
 ## MISO Installation
 
+Typical install time is ~1 min. 
 MISO has been tested on the following operating systems: 
 - macOS: Ventura (13.5.1)
 - Linux: CentOS (7) 
@@ -29,6 +30,10 @@ We recommend creating and activating a new conda environment when installing the
 conda create -n miso python=3.7.12
 conda activate miso
 ```        
+
+Typical runtime for MISO is ~1 min on a GPU. 
+For a tutorial, please see: https://github.com/kpcoleman/miso/blob/main/tutorial/tutorial.ipynb
+
 
 ## Software Requirements  
 scikit-learn==1.0.2  
