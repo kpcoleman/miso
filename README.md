@@ -68,20 +68,20 @@ python -m ipykernel install --user --name=miso
 
 
 ## Software Requirements  
-einops==0.6.0 
-importlib 
-importlib-metadata 
-numpy==1.21.6 
-opencv_python==4.6.0.66 
-Pillow>=6.1.0 
-scanpy==1.9.1 
-scikit_image==0.19.3 
-scikit_learn==1.0.2 
-scipy==1.7.3 
-setuptools==65.6.3 
-torch==1.13.1 
-torchvision==0.14.1 
-tqdm==4.64.1 
+einops==0.6.0  
+importlib  
+importlib-metadata  
+numpy==1.21.6  
+opencv_python==4.6.0.66  
+Pillow>=6.1.0  
+scanpy==1.9.1  
+scikit_image==0.19.3  
+scikit_learn==1.0.2  
+scipy==1.7.3  
+setuptools==65.6.3  
+torch==1.13.1  
+torchvision==0.14.1  
+tqdm==4.64.1  
 
 H&E image feature extraction code is based on HIPT and iSTAR. Pre-trained vision transformer models are from HIPT.
 
