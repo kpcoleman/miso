@@ -46,13 +46,11 @@ cd miso
 git lfs install
 git lfs fetch
 git lfs pull
-cd ..
 ```
 
 The MISO package and dependencies can then be installed:
 
 ```bash
-python -m pip install -r requirements.txt
 python -m pip install .
 ```
 
