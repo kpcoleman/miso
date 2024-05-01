@@ -99,9 +99,11 @@ class Miso(nn.Module):
       tab20 = cm.get_cmap('tab20')
       tab20b = cm.get_cmap('tab20b')
       cmap = ListedColormap(np.vstack((tab20(np.linspace(0,1,20)),tab20b(np.linspace(0,1,20)))))
-      im1 = np.empty((locs['4'].max()+1, locs['5'].max()+1))
+      locs['2'] = locs['2'].astype('int')
+      locs['3'] = locs['3'].astype('int')
+      im1 = np.empty((locs['2'].max()+1, locs['3'].max()+1))
       im1[:] = np.nan
-      im1[locs.array_row,locs.array_col] = self.clusters
+      im1[locs['2'],locs['3']] = self.clusters
       im2 = cmap(im1.astype('int'))
       im2[np.isnan(im1)] = 1
       im3 = Image.fromarray((im2 * 255).astype(np.uint8))
