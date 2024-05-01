@@ -93,11 +93,9 @@ class Miso(nn.Module):
     def cluster(self, n_clusters=10):
       clusters = KMeans(n_clusters, random_state = 100).fit_predict(self.emb)
       self.clusters = clusters
-      clusters = pd.DataFrame(clusters)
-      clusters.index = locs.index
       return clusters
 
-    def plot(self):
+    def plot(self, locs):
       tab20 = cm.get_cmap('tab20')
       tab20b = cm.get_cmap('tab20b')
       cmap = ListedColormap(np.vstack((tab20(np.linspace(0,1,20)),tab20b(np.linspace(0,1,20)))))
