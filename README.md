@@ -54,7 +54,7 @@ The MISO package and dependencies can then be installed:
 python -m pip install .
 ```
 
-Typical runtime for MISO is ~1 min on a GPU.  
+Typical training time for MISO on a dataset containing less than 10,000 spots is ~1 min on a GPU and ~10 min on a CPU.  
 For a tutorial, please see: https://github.com/kpcoleman/miso/blob/main/tutorial/tutorial.ipynb
 
 The miso conda environment can be used for the tutorial by:
