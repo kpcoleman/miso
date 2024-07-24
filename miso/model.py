@@ -23,12 +23,20 @@ import scipy
 from tqdm import tqdm
 
 class Miso(nn.Module):
-    def __init__(self, features, adj, ind_views='all', combs='all', sparse=False, device='cpu'):
+    def __init__(self, features, ind_views='all', combs='all', sparse=False, neighbors = None, device='cpu'):
         super(Miso, self).__init__()
         self.device = device
         self.num_views = len(features)
         self.features = [torch.Tensor(i).to(self.device) for i in features] 
         self.sparse = sparse
+        features = [StandardScaler().fit_transform(i) for i in features]
+        if neighbors is None and self.sparse:
+            neighbors=100
+            
+        adj = [calculate_affinity(i, sparse = self.sparse, neighbors=neighbors) for i in features]
+        self.adj1 = adj
+        pcs = [PCA(128).fit_transform(i) if i.shape[1] > 128 else i for i in features]
+        self.pcs = [torch.Tensor(i).to(self.device) for i in pcs] 
         if not self.sparse:
           self.adj = [torch.Tensor(i).to(self.device) for i in adj]
         else:
@@ -39,11 +47,11 @@ class Miso(nn.Module):
           self.adj = [torch.sparse.FloatTensor(indices[i], values[i], shape[i]).to(self.device) for i in range(len(adj))]
 
         if ind_views=='all':
-            self.ind_views = list(range(len(self.features)))
+            self.ind_views = list(range(len(self.pcs)))
         else:
             self.ind_views = ind_views   
         if combs=='all':
-            self.combinations = list(combinations(list(range(len(features))),2))
+            self.combinations = list(combinations(list(range(len(self.pcs))),2))
         else:
             self.combinations = combs        
 
@@ -78,34 +86,24 @@ class Miso(nn.Module):
                 optimizer.step()
 
         [self.mlps[i].eval() for i in range(self.num_views)]
-        Y = [self.mlps[i].get_embeddings(self.features[i]) for i in range(self.num_views)]
-        interactions = [Y[i][:, :, None]*Y[j][:, None, :] for i,j in self.combinations]
-        interactions = [i.reshape(i.shape[0],-1) for i in interactions]
-        interactions = [torch.matmul(i,torch.pca_lowrank(i,q=32)[2]) for i in interactions]
+        Y = [self.mlps[i].get_embeddings(self.pcs[i]) for i in range(self.num_views)]
+        if self.combinations is not None:
+            interactions = [Y[i][:, :, None]*Y[j][:, None, :] for i,j in self.combinations]
+            interactions = [i.reshape(i.shape[0],-1) for i in interactions]
+            interactions = [torch.matmul(i,torch.pca_lowrank(i,q=32)[2]) for i in interactions]
         Y = [Y[i] for i in self.ind_views]
         Y = [StandardScaler().fit_transform(i.cpu().detach().numpy()) for i in Y]
-        interactions = [StandardScaler().fit_transform(i.cpu().detach().numpy()) for i in interactions]
         Y = np.concatenate(Y,1)
-        interactions = np.concatenate(interactions,1)
-        emb = np.concatenate((Y,interactions),1)
+        if self.combinations is not None:
+            interactions = [StandardScaler().fit_transform(i.cpu().detach().numpy()) for i in interactions]
+            interactions = np.concatenate(interactions,1)
+            emb = np.concatenate((Y,interactions),1)
+        else:
+            emb = Y
         self.emb = emb
 
     def cluster(self, n_clusters=10):
       clusters = KMeans(n_clusters, random_state = 100).fit_predict(self.emb)
       self.clusters = clusters
       return clusters
-
-    def plot(self, locs):
-      tab20 = cm.get_cmap('tab20')
-      tab20b = cm.get_cmap('tab20b')
-      cmap = ListedColormap(np.vstack((tab20(np.linspace(0,1,20)),tab20b(np.linspace(0,1,20)))))
-      locs['2'] = locs['2'].astype('int')
-      locs['3'] = locs['3'].astype('int')
-      im1 = np.empty((locs['2'].max()+1, locs['3'].max()+1))
-      im1[:] = np.nan
-      im1[locs['2'],locs['3']] = self.clusters
-      im2 = cmap(im1.astype('int'))
-      im2[np.isnan(im1)] = 1
-      im3 = Image.fromarray((im2 * 255).astype(np.uint8))
-      return im3
     
