@@ -54,7 +54,7 @@ The MISO package and dependencies can then be installed:
 python -m pip install .
 ```
 
-Typical training time for MISO on a dataset containing less than 10,000 spots is <1 min on a GPU and <5 min on a CPU.  
+Typical training time for MISO on a dataset containing less than 10,000 spots is <1 min on a GPU and <5 min on a CPU. The H&E histology image feature extraction step takes approximately 10 minutes on a GPU and 2 hours on a CPU.   
 For a tutorial, please see: https://github.com/kpcoleman/miso/blob/main/tutorial/tutorial.ipynb
 
 The miso conda environment can be used for the tutorial by:
