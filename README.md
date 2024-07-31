@@ -1,6 +1,6 @@
 # Resolving tissue complexity by multi-modal spatial omics modeling with MISO
 
-### Kyle Coleman*, Daiwei Zhang, Amelia Schroeder, Melanie Braisted, Niklas Blank, Alexis Jazmyn, Hanying Yan, Yanxiang Deng, Elizabeth F. Furth, Edward B. Lee, Christoph A. Thaiss, Jian Hu*, Mingyao Li*
+### Kyle Coleman*, Amelia Schroeder, Melanie Loth, Daiwei Zhang, Jeong Hwan Park, Ji-Youn Sung, Niklas Blank, Alexis Jazmyn, Xuyu Qian, Jianfeng Chen, Jiahui Jiang, Hanying Yan, Laith Z. Samarah, Jean R. Clemenceau, Inyeop Jang, Minji Kim, Isabelle Barnfather, Joshua D. Rabinowitz, Yanxiang Deng, Edward B. Lee, Alexander Lazar, Jianjun Gao, Emma E. Furth, Tae Hyun Hwang, Linghua Wang, Christoph A. Thaiss, Jian Hu*, Mingyao Li*
 
 MISO is a deep-learning based method developed for the integration and clustering of multi-modal spatial omics data. MISO requires minimal hyperparameter tuning, and can be applied to any number of 
 omic and imaging data modalities from any multi-modal spatial omics experiment. MISO has been evaluated on datasets from experiements including spatial transcriptomics (transcriptomics and histology), 
