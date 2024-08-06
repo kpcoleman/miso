@@ -31,14 +31,14 @@ def get_vit256(pretrained_weights=None, arch='vit_small', device=torch.device('c
     if pretrained_weights is not None:
         state_dict = torch.load(pretrained_weights, map_location="cpu")
         if checkpoint_key is not None and checkpoint_key in state_dict:
-            print(f"Take key {checkpoint_key} in provided checkpoint dict")
+            #print(f"Take key {checkpoint_key} in provided checkpoint dict")
             state_dict = state_dict[checkpoint_key]
         # remove `module.` prefix
         state_dict = {k.replace("module.", ""): v for k, v in state_dict.items()}
         # remove `backbone.` prefix induced by multicrop wrapper
         state_dict = {k.replace("backbone.", ""): v for k, v in state_dict.items()}
         msg = model256.load_state_dict(state_dict, strict=False)
-        print('Pretrained weights loaded from {}'.format(pretrained_weights))
+        #print('Pretrained weights loaded from {}'.format(pretrained_weights))
         
     return model256
 
@@ -67,14 +67,14 @@ def get_vit4k(pretrained_weights=None, arch='vit4k_xs', device=torch.device('cud
     if pretrained_weights is not None:
         state_dict = torch.load(pretrained_weights, map_location="cpu")
         if checkpoint_key is not None and checkpoint_key in state_dict:
-            print(f"Take key {checkpoint_key} in provided checkpoint dict")
+            #print(f"Take key {checkpoint_key} in provided checkpoint dict")
             state_dict = state_dict[checkpoint_key]
         # remove `module.` prefix
         state_dict = {k.replace("module.", ""): v for k, v in state_dict.items()}
         # remove `backbone.` prefix induced by multicrop wrapper
         state_dict = {k.replace("backbone.", ""): v for k, v in state_dict.items()}
         msg = model4k.load_state_dict(state_dict, strict=False)
-        print('Pretrained weights loaded from {}'.format(pretrained_weights))
+        #print('Pretrained weights loaded from {}'.format(pretrained_weights))
         
     return model4k
 

@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 from sklearn.neighbors import kneighbors_graph
 from PIL import Image
+import random
 
 def protein_norm(x):
         s = np.sum(np.log1p(x[x > 0]))
@@ -28,6 +29,13 @@ def preprocess(adata,modality):
   elif modality=='protein':
     adata.X = np.apply_along_axis(protein_norm, 1, (adata.X.A if scipy.sparse.issparse(adata.X) else np.array(adata.X)))
     return adata.X     
+
+  elif modality=='metabolite':
+    sc.pp.log1p(adata)
+    if scipy.sparse.issparse(adata.X):
+      return adata.X.A
+    else:
+      return adata.X
 
 
 def calculate_affinity(X1, sig=30, sparse = False, neighbors = 100):
@@ -111,3 +119,9 @@ def plot_on_histology(clusters, locs, im, scale, s=10):
   plot = plt.scatter(x=locs['5'], y=locs['4'], c = clusters, cmap=cmap1, s=s); 
   plt.axis('off'); 
   return plot
+
+def set_random_seed(seed=100):
+  np.random.seed(seed)
+  torch.manual_seed(seed)
+  random.seed(seed)
+

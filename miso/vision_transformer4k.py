@@ -157,7 +157,7 @@ class VisionTransformer4K(nn.Module):
         self.num_features = self.embed_dim = embed_dim
         self.phi = nn.Sequential(*[nn.Linear(input_embed_dim, output_embed_dim), nn.GELU(), nn.Dropout(p=drop_rate)])
         num_patches = int(img_size[0] // 16)**2
-        print("# of Patches:", num_patches)
+        #print("# of Patches:", num_patches)
         
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
         self.pos_embed = nn.Parameter(torch.zeros(1, num_patches + 1, embed_dim))

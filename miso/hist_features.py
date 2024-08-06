@@ -21,6 +21,16 @@ from . hipt_model_utils import eval_transforms
 from . hipt_4k import HIPT_4K
 from typing import Optional, Sequence
 
+try:
+    shell = get_ipython().__class__.__name__
+    if shell == 'ZMQInteractiveShell':
+        from tqdm.notebook import tqdm
+    else:
+        from tqdm import tqdm
+except NameError:
+    from tqdm import tqdm
+
+
 Image.MAX_IMAGE_PIXELS = None
 
 
@@ -266,7 +276,7 @@ def get_embeddings(img, pretrained=True, device='cuda'):
         emb_sub: Embeddings of (16 x 16)-sized patches
             Shape: (H/16, W/16, 384)
     '''
-    print('Extracting embeddings...')
+    #print('Extracting embeddings...')
     t0 = time()
 
     tile_size = 4096
@@ -289,8 +299,8 @@ def get_embeddings(img, pretrained=True, device='cuda'):
     emb_sub = []
     emb_mid = []
     for i in range(len(tiles)):
-        if i % 10 == 0:
-            print('tile', i, '/', len(tiles))
+        #if i % 10 == 0:
+        #    print('tile', i, '/', len(tiles))
         x_mid, x_sub = get_embeddings_sub(model, tiles[i])
         emb_mid.append(x_mid)
         emb_sub.append(x_sub)
@@ -326,7 +336,7 @@ def get_embeddings(img, pretrained=True, device='cuda'):
         chans_cls.append(chan)
     del emb_cls
 
-    print(int(time() - t0), 'sec')
+    #print(int(time() - t0), 'sec')
 
     return chans_cls, chans_sub
 
@@ -346,9 +356,9 @@ def get_embeddings_shift(
             for __ in range(384)]
     start_list = list(range(0, margin, stride))
     n_reps = 0
-    for start0 in start_list:
-        for start1 in start_list:
-            print(f'shift {start0}/{margin}, {start1}/{margin}')
+    for k,start0 in enumerate(start_list):
+        for start1 in tqdm(start_list, desc = 'Extracting image features: ' + str(k+1) + '/' + str(len(start_list))):
+            #print(f'shift {start0}/{margin}, {start1}/{margin}')
             t0 = time()
             stop0, stop1 = -margin+start0, -margin+start1
             im = img[start0:stop0, start1:stop1]
@@ -364,7 +374,7 @@ def get_embeddings_shift(
                 chans_sub[i][sta0:sto0, sta1:sto1] += sub[i]
             del sub
             n_reps += 1
-            print(int(time() - t0), 'sec')
+            #print(int(time() - t0), 'sec')
 
     mar = margin // factor
     for chan in chans_cls:
@@ -518,20 +528,26 @@ def adjust_weights(embs, weights=None):
 
 def get_features(img,locs,rad,pixel_size_raw,pixel_size=0.5,pretrained=True,device='cpu'):
   scale = pixel_size_raw / pixel_size
+  print('Scaling image')
   img = rescale_image(img, scale = scale)
   rad = rad*scale
-  locs['4'] = locs['4']*scale
-  locs['5'] = locs['5']*scale
+  locs1 = locs.copy()
+  locs1['4'] = locs1['4']*scale
+  locs1['5'] = locs1['5']*scale
+  print('Preprocessing image')
   img = preprocess(img)
   #mask = compute_tissue_mask(img)
   #mask = remove_border(mask)
+  print('Adjusting margins')
   img = adjust_margins(img, pad=256, pad_value=255)
   #img[~mask] = 0
   #mask = shrink_mask(mask, size=256)
   #mask = mask[..., np.newaxis].astype(np.uint8) * 255
   #img = np.concatenate([img, mask], -1)
+  #print('Extracting image features')
   emb_cls, emb_sub = get_embeddings_shift(img, pretrained=True, device=device)
   embs = dict(cls=emb_cls, sub=emb_sub)
+  print('Smoothing embeddings')
   embs = smoothen_embeddings(embs, size=16, kernel='uniform', groups=['cls'], method='cv', device=device)
   embs = smoothen_embeddings(embs, size=4, kernel='uniform', groups=['sub'], method='cv', device=device)
   #match_foregrounds(embs)
@@ -539,5 +555,5 @@ def get_features(img,locs,rad,pixel_size_raw,pixel_size=0.5,pretrained=True,devi
   cls1 = rearrange(emb_cls, 'c h w -> h w c')
   sub1 = rearrange(emb_sub, 'c h w -> h w c')
   cls_sub1 = np.concatenate((cls1, sub1), 2)
-  cls_sub2 = np.stack([rearrange(cls_sub1[(int(np.ceil((locs['4'][i]-rad)/16))):(int(np.floor((locs['4'][i]+rad)/16))),(int(np.ceil((locs['5'][i]-rad)/16))):(int(np.floor((locs['5'][i]+rad)/16)))], 'h w c -> (h w) c').mean(0) for i in range(locs.shape[0])])
+  cls_sub2 = np.stack([rearrange(cls_sub1[(int(np.ceil((locs1['4'][i]-rad)/16))):(int(np.floor((locs1['4'][i]+rad)/16))),(int(np.ceil((locs1['5'][i]-rad)/16))):(int(np.floor((locs1['5'][i]+rad)/16)))], 'h w c -> (h w) c').mean(0) for i in range(locs1.shape[0])])
   return cls_sub2

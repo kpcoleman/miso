@@ -16,11 +16,19 @@ from scipy.sparse import coo_matrix
 from scipy.spatial.distance import cdist
 from sklearn.preprocessing import StandardScaler
 from itertools import combinations
-from matplotlib import cm
-from matplotlib.colors import ListedColormap, LinearSegmentedColormap
+from sklearn.decomposition import PCA
 from PIL import Image
 import scipy
-from tqdm import tqdm
+
+try:
+    shell = get_ipython().__class__.__name__
+    if shell == 'ZMQInteractiveShell':
+        from tqdm.notebook import tqdm
+    else:
+        from tqdm import tqdm
+except NameError:
+    from tqdm import tqdm
+
 
 class Miso(nn.Module):
     def __init__(self, features, ind_views='all', combs='all', sparse=False, neighbors = None, device='cpu'):
@@ -56,7 +64,7 @@ class Miso(nn.Module):
             self.combinations = combs        
 
     def train(self):
-        self.mlps = [MLP(input_shape = self.features[i].shape[1], output_shape = 32).to(self.device) for i in range(len(self.features))]
+        self.mlps = [MLP(input_shape = self.pcs[i].shape[1], output_shape = 32).to(self.device) for i in range(len(self.pcs))]
         def sc_loss(A,Y):
             if not self.sparse:
               return (torch.triu(torch.cdist(Y,Y))*torch.triu(A)).mean()
@@ -68,18 +76,15 @@ class Miso(nn.Module):
               dist = torch.norm(rows1 - rows2, dim=1)
               return (dist*A.coalesce().values()).mean()
 
-        def mse_loss(X,X_hat):
-            nn.MSELoss()
-
+            
         for i in range(self.num_views):
-            print('Training network for modality ' + str(i+1))
             self.mlps[i].train()
             optimizer = optim.Adam(self.mlps[i].parameters(), lr=1e-3)          
-            for epoch in tqdm(range(1000)):
+            for epoch in tqdm(range(1000), desc='Training network for modality ' + str(i+1)):
                 optimizer.zero_grad()
-                x_hat = self.mlps[i](self.features[i])
-                Y1 = self.mlps[i].get_embeddings(self.features[i])
-                loss1 = nn.MSELoss()(self.features[i],x_hat)
+                x_hat = self.mlps[i](self.pcs[i])
+                Y1 = self.mlps[i].get_embeddings(self.pcs[i])
+                loss1 = nn.MSELoss()(self.pcs[i],x_hat)
                 loss2 = sc_loss(self.adj[i], Y1)
                 loss=loss1+loss2
                 loss.backward()
