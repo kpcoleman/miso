@@ -555,5 +555,8 @@ def get_features(img,locs,rad,pixel_size_raw,pixel_size=0.5,pretrained=True,devi
   cls1 = rearrange(emb_cls, 'c h w -> h w c')
   sub1 = rearrange(emb_sub, 'c h w -> h w c')
   cls_sub1 = np.concatenate((cls1, sub1), 2)
-  cls_sub2 = np.stack([rearrange(cls_sub1[(int(np.ceil((locs1['4'][i]-rad)/16))):(int(np.floor((locs1['4'][i]+rad)/16))),(int(np.ceil((locs1['5'][i]-rad)/16))):(int(np.floor((locs1['5'][i]+rad)/16)))], 'h w c -> (h w) c').mean(0) for i in range(locs1.shape[0])])
+  if rad>16:
+    cls_sub2 = np.stack([rearrange(cls_sub1[(int(np.ceil((locs1['4'][i]-rad)/16))):(int(np.floor((locs1['4'][i]+rad)/16))),(int(np.ceil((locs1['5'][i]-rad)/16))):(int(np.floor((locs1['5'][i]+rad)/16)))], 'h w c -> (h w) c').mean(0) for i in range(locs1.shape[0])])
+  else:
+    cls_sub2 = cls_sub1[(locs1['4']/16).round().astype('int'), (locs1['5']/16).round().astype('int'), :]
   return cls_sub2
